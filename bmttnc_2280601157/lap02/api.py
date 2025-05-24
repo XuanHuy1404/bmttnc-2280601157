@@ -95,6 +95,7 @@ def playfair_decrypt():
     decrypted_text = playfair_cipher.playfair_decrypt(cipher_text, playfair_matrix)
     return jsonify({'decrypted_text': decrypted_text})
 
+
 # Run app
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
