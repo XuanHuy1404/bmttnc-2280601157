@@ -8,21 +8,21 @@ class MyApp(QMainWindow):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.ui.btnEncrypt.clicked.connect(self.call_api_encrypt)
-        self.ui.btnDecrypt.clicked.connect(self.call_api_decrypt)
-
-
+        self.ui.btn_Encrypt.clicked.connect(self.call_api_encrypt)
+        self.ui.btn_Decrypt.clicked.connect(self.call_api_decrypt)
+    
     def call_api_encrypt(self):
         url = "http://127.0.0.1:5000/api/caesar/encrypt"
         payload = {
-            "plain_text": self.ui.txt_plain_text.toPlainText(),
-            "key": self.ui.txt_key.text()
+            "plain_text": self.ui.txt_PlainText.toPlainText(),  # QTextEdit: dùng toPlainText()
+            "key": int(self.ui.txt_Key.text())                  # QLineEdit: dùng text()
         }
         try:
             response = requests.post(url, json=payload)
             if response.status_code == 200:
                 data = response.json()
-                self.ui.txt_cipher_text.setText(data["encrypted_message"])
+                self.ui.txt_CipherText.setPlainText(data["encrypted_message"])
+
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Information)
                 msg.setText("Encrypted Successfully")
@@ -30,28 +30,28 @@ class MyApp(QMainWindow):
             else:
                 print("Error while calling API")
         except requests.exceptions.RequestException as e:
-            print(f"Error: %s" % e.message)
-
+            print("Error: %s" % e)
+    
     def call_api_decrypt(self):
         url = "http://127.0.0.1:5000/api/caesar/decrypt"
         payload = {
-            "cipher_text": self.ui.txt_cipher_text.toPlainText(),
-            "key": self.ui.txt_key.text()
+            "cipher_text": self.ui.txt_CipherText.toPlainText(),  # QTextEdit
+            "key": int(self.ui.txt_Key.text())                     # QLineEdit
         }
         try:
             response = requests.post(url, json=payload)
             if response.status_code == 200:
                 data = response.json()
-                self.ui.txt_plain_text.setText(data["decrypted_message"])
+                self.ui.txt_PlainText.setPlainText(data["decrypted_message"])
 
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Information)
                 msg.setText("Decrypted Successfully")
                 msg.exec_()
             else:
-                print("Error while calling API!") # Corrected typo: "API!" for consistency.
+                print("Error while calling API")
         except requests.exceptions.RequestException as e:
-            print(f"Error: %s" % e) # Changed to f-string for modern Python and removed .message as it might not always exist for all RequestException types
+            print("Error: %s" % e)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
